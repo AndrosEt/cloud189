@@ -167,6 +167,7 @@ class Cloud189(object):
             "mailSuffix": "@189.cn",
             "paramId": paramId
         }
+        logger.debug(f"Login: data: {data=}")
         r = self._post(url, data=data)
         msg = r.json()["msg"]
         if msg == "登录成功":
