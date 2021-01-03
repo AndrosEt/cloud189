@@ -56,7 +56,7 @@ def get_file_list():
     '''
 
 
-@app.route('/v1/fileurl', methods=['GET'])
+@app.route('/v1/fileUrl', methods=['GET'])
 def get_file_url():
     # Check if a valid image file was uploaded
     print('get the file url')
