@@ -8,13 +8,14 @@ from cloud189.api.core import Cloud189
 from time import sleep
 import json
 import numpy as np
+from flask_cors import CORS
 
 
 # You can change this to any folder on your system
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
-
+CORS(app)
 
 commander = Commander()
 
