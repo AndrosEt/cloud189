@@ -168,14 +168,14 @@ class Cloud189(object):
             "paramId": paramId
         }
         logger.debug(f"Login: data: {data=}")
-        print(f"Login: data: {data=}")
-        r = self._post(url, data=data)
-        msg = r.json()["msg"]
-        if msg == "登录成功":
-            self._get(r.json()["toUrl"])
-            return Cloud189.SUCCESS
-        print(msg)
-        return Cloud189.FAILED
+        logger.debug(f"Login: url: {url=}")
+        # r = self._post(url, data=data)
+        # msg = r.json()["msg"]
+        # if msg == "登录成功":
+        #     self._get(r.json()["toUrl"])
+        #     return Cloud189.SUCCESS
+        # print(msg)
+        # return Cloud189.FAILED
 
     def _get_more_page(self, resp: dict, r_path=False) -> (list, bool):
         """处理可能需要翻页的请求信息"""
