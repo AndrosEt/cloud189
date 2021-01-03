@@ -12,3 +12,5 @@ six
 #添加可以在Linux headless模式下输入验证码的图形库
 fabulous
 Pillow
+flask
+numpy

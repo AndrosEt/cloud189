@@ -167,15 +167,13 @@ class Cloud189(object):
             "mailSuffix": "@189.cn",
             "paramId": paramId
         }
-        logger.debug(f"Login: data: {data=}")
-        logger.debug(f"Login: url: {url=}")
-        # r = self._post(url, data=data)
-        # msg = r.json()["msg"]
-        # if msg == "登录成功":
-        #     self._get(r.json()["toUrl"])
-        #     return Cloud189.SUCCESS
-        # print(msg)
-        # return Cloud189.FAILED
+        r = self._post(url, data=data)
+        msg = r.json()["msg"]
+        print(msg)
+        if msg == "登录成功":
+            self._get(r.json()["toUrl"])
+            return Cloud189.SUCCESS
+        return Cloud189.FAILED
 
     def _get_more_page(self, resp: dict, r_path=False) -> (list, bool):
         """处理可能需要翻页的请求信息"""
@@ -328,6 +326,10 @@ class Cloud189(object):
         pwd = resp['accessCode'] if 'accessCode' in resp else ''
         return ShareCode(Cloud189.SUCCESS, share_url, pwd, expireTime)
 
+    def get_view_url(self, url):
+        resp = self._get(url)
+        return resp.json()
+
     def get_file_list(self, fid) -> (FileList, PathList):
         """获取文件列表"""
         file_list = FileList()
@@ -337,6 +339,7 @@ class Cloud189(object):
         data = []
         path = []
         url = self._host_url + "/v2/listFiles.action"
+        print(fid)
         while True:
             params = {
                 "fileId": str(fid),
@@ -352,6 +355,7 @@ class Cloud189(object):
                 return file_list, path_list
             try:
                 resp = resp.json()
+                # print(resp)
             except (json.JSONDecodeError, simplejson.errors.JSONDecodeError):
                 # 如果 fid 文件夹被删掉，resp 是 200 但是无法使用 json 方法
                 logger.error(f"File list: {fid=} not exit")
@@ -378,15 +382,16 @@ class Cloud189(object):
             size = item['fileSize'] if 'fileSize' in item else ''
             ftype = item['fileType']
             durl = item['downloadUrl'] if 'downloadUrl' in item else ''
+            vurl = item['videoUrl'] if 'videoUrl' in item else ''
             isFolder = item['isFolder']
             isStarred = item['isStarred']
             file_list.append(FileInfo(name=name, id=id_, pid=pid, ctime=ctime, optime=optime, size=size,
-                                      ftype=ftype, durl=durl, isFolder=isFolder, isStarred=isStarred))
+                                      ftype=ftype, durl=durl, vurl=vurl, isFolder=isFolder, isStarred=isStarred))
         for item in path:
             path_list.append(PathInfo(name=item['fileName'], id=int(item['fileId']),
                                       isCoShare=item['isCoShare']))
 
-        return file_list, path_list
+        return file_list, path_list, resp
 
     def _create_upload_file(self, up_info: UpInfo) -> (int, tuple):
         """创建上传任务，包含秒传检查，返回状态码、创建信息"""

@@ -9,7 +9,7 @@ __all__ = ['FileInfo', 'RecInfo', 'PathInfo', 'UpCode', 'MkCode', 'UpInfo',
            'ShareCode', 'FolderTree', 'ShareInfo', 'UserInfo']
 
 
-_base_info = ['name', 'id', 'pid', 'ctime', 'optime', 'size', 'ftype', 'isFolder', 'durl']
+_base_info = ['name', 'id', 'pid', 'ctime', 'optime', 'size', 'ftype', 'isFolder', 'durl', 'vurl']
 _file_info = (*_base_info, 'isStarred', 'account', 'count')
 _rec_info = [*_base_info, 'isFamily', 'path', 'fid']
 _share_info = ['pwd', 'copyC', 'downC', 'prevC', 'url', 'path',

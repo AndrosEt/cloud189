@@ -78,7 +78,7 @@ class Commander:
     def refresh(self, dir_id=None, auto=False):
         """刷新当前文件夹和路径信息"""
         dir_id = self._work_id if dir_id is None else dir_id
-        self._file_list, self._path_list = self._disk.get_file_list(dir_id)
+        self._file_list, self._path_list, _ = self._disk.get_file_list(dir_id)
         if not self._file_list and not self._path_list:
             if auto:
                 error(f"文件夹 id={dir_id} 无效(被删除), 将切换到根目录！")
@@ -94,15 +94,15 @@ class Commander:
             self._parent_name = self._path_list[-2].name
             self._parent_id = self._path_list[-2].id
 
-    def login(self, args):
+    def login(self, args, username="", password=""):
         """登录网盘"""
         if args:
             if '--auto' in args:
                 if config.cookie and self._disk.login_by_cookie(config) == Cloud189.SUCCESS:
                     self.refresh(config.work_id, auto=True)
                     return None
-        username = input('输入用户名:')
-        password = getpass('输入密码:')
+        # username = input('输入用户名:')
+        # password = getpass('输入密码:')
         if not username or not password:
             error('没有用户名或密码 :(')
             return None
@@ -215,59 +215,66 @@ class Commander:
             self.refresh(config.work_id)
         else:
             error("切换用户失败!")
+    def get_url(self, url):
+        return self._disk.get_view_url(url)
 
-    def ls(self, args):
+    def ls(self, args, fid=-11):
         """列出文件(夹)"""
-        fid = old_fid = self._work_id
-        flag_full = False
-        flag_arg_l = False
-        if args:
-            if len(args) >= 2:
-                if args[0] == '-l':
-                    flag_full = True
-                    fname = args[-1]
-                elif args[-1] == '-l':
-                    flag_full = True
-                    fname = args[0]
-                else:
-                    info("暂不支持查看多个文件！")
-                    fname = args[0]
-            else:
-                if args[0] == '-l':
-                    flag_full = True
-                    flag_arg_l = True
-                else:
-                    fname = args[0]
-            if not flag_arg_l:
-                if file := self._file_list.find_by_name(fname):
-                    if file.isFolder:
-                        fid = file.id
-                    else:
-                        error(f"{fname} 非文件夹，显示当前目录文件")
-                else:
-                    error(f"{fname} 不存在，显示当前目录文件")
-        if fid != old_fid:
-            self._file_list, _ = self._disk.get_file_list(fid)
-        if not flag_full:  # 只罗列文件名
-            for file in self._file_list:
-                if file.isFolder:
-                    print(f"\033[1;34m{handle_name(file.name)}\033[0m", end='  ')
-                else:
-                    print(f"{handle_name(file.name)}", end='  ')
-            print()
-        else:
-            if self._reader_mode:  # 方便屏幕阅读器阅读
-                for file in self._file_list:
-                    print(
-                        f"{handle_name(file.name)}  大小:{get_file_size_str(file.size)}  上传时间:{file.ctime}  ID:{file.id}")
-            else:  # 普通用户显示方式
-                for file in self._file_list:
-                    star = '✦' if file.isStarred else '✧'  # 好像 没什么卵用
-                    file_name = f"\033[1;34m{handle_name(file.name)}\033[0m" if file.isFolder else handle_name(file.name)
-                    print("# {0:<17}{1:<4}{2:<20}{3:>8}  {4}".format(
-                        file.id, star, file.ctime, get_file_size_str(file.size), file_name))
-        if fid != old_fid:
-            self._file_list, _ = self._disk.get_file_list(old_fid)
+        self._file_list, _, data = self._disk.get_file_list(fid)
+        return data
+        # if fid:
+        #     fid = old_fid = fid
+        # else:
+        #     fid = old_fid = self._work_id
+        # flag_full = False
+        # flag_arg_l = False
+        # if args:
+        #     if len(args) >= 2:
+        #         if args[0] == '-l':
+        #             flag_full = True
+        #             fname = args[-1]
+        #         elif args[-1] == '-l':
+        #             flag_full = True
+        #             fname = args[0]
+        #         else:
+        #             info("暂不支持查看多个文件！")
+        #             fname = args[0]
+        #     else:
+        #         if args[0] == '-l':
+        #             flag_full = True
+        #             flag_arg_l = True
+        #         else:
+        #             fname = args[0]
+        #     if not flag_arg_l:
+        #         if file := self._file_list.find_by_name(fname):
+        #             if file.isFolder:
+        #                 fid = file.id
+        #             else:
+        #                 error(f"{fname} 非文件夹，显示当前目录文件")
+        #         else:
+        #             error(f"{fname} 不存在，显示当前目录文件")
+        # if fid != old_fid:
+        #     self._file_list, _ = self._disk.get_file_list(fid)
+        # if not flag_full:  # 只罗列文件名
+        #     for file in self._file_list:
+        #         if file.isFolder:
+        #             print(f"\033[1;34m{handle_name(file.name)}\033[0m", end='  ')
+        #         else:
+        #             print(f"{handle_name(file.name)}", end='  ')
+        #     print()
+        # else:
+        #     if self._reader_mode:  # 方便屏幕阅读器阅读
+        #         for file in self._file_list:
+        #             print(
+        #                 f"{handle_name(file.name)}  大小:{get_file_size_str(file.size)}  上传时间:{file.ctime}  ID:{file.id}")
+        #     else:  # 普通用户显示方式
+        #         for file in self._file_list:
+        #             star = '✦' if file.isStarred else '✧'  # 好像 没什么卵用
+        #             file_name = f"\033[1;34m{handle_name(file.name)}\033[0m" if file.isFolder else handle_name(file.name)
+        #             print("# {0:<17}{1:<4}{2:<20}{3:>8}  {4}".format(
+        #                 file.id, star, file.ctime, get_file_size_str(file.size), file_name))
+        # if fid != old_fid:
+        #     self._file_list, _ = self._disk.get_file_list(old_fid)
 
     def cd(self, args):
         """切换工作目录"""
