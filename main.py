@@ -39,7 +39,9 @@ def get_file_list():
     print('get the file list')
     if request.method == 'GET':
 
-        result = commander.ls(['-l'], -13)
+        args = request.args
+        file_id = args.get("fileId")
+        result = commander.ls(['-l'], file_id)
 
         print(result)
 
