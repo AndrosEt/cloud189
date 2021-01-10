@@ -26,9 +26,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def listToJson(lst):
-    keys = [str(x) for x in np.arange(len(lst))]
-    list_json = dict(zip(keys, lst))
-    str_json = json.dumps(list_json, ensure_ascii=False)  # json转为string
+    str_json = json.dumps(lst, ensure_ascii=False)  # json转为string
     return str_json
 
 
@@ -41,9 +39,7 @@ def get_file_list():
 
         args = request.args
         file_id = args.get("fileId")
-        result = commander.ls(['-l'], file_id)
-
-        print(result)
+        result = listToJson(commander.ls(['-l'], file_id))
 
         return result
 

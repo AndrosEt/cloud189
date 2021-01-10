@@ -373,6 +373,7 @@ class Cloud189(object):
             data.extend(data_[0])
             if not path:
                 path = data_[1]  # 不同 page 路径因该是一样的
+        # print(data)
         for item in data:
             name = item['fileName']
             id_ = int(item['fileId'])
@@ -391,7 +392,7 @@ class Cloud189(object):
             path_list.append(PathInfo(name=item['fileName'], id=int(item['fileId']),
                                       isCoShare=item['isCoShare']))
 
-        return file_list, path_list, resp
+        return data, path_list, resp
 
     def _create_upload_file(self, up_info: UpInfo) -> (int, tuple):
         """创建上传任务，包含秒传检查，返回状态码、创建信息"""

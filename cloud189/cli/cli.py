@@ -221,7 +221,7 @@ class Commander:
     def ls(self, args, fid=-11):
         """列出文件(夹)"""
         self._file_list, _, data = self._disk.get_file_list(fid)
-        return data
+        return self._file_list
         # if fid:
         #     fid = old_fid = fid
         # else:

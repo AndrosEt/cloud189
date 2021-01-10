@@ -5,6 +5,7 @@
 
 __all__ = ['FileList', 'PathList', 'TreeList']
 
+import json
 
 class ItemList:
     """具有 name, id 属性对象的列表"""
