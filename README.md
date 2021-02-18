@@ -15,6 +15,12 @@
 <img src="https://img.shields.io/github/v/release/Aruelius/cloud189.svg?logo=iCloud"> <img src="https://img.shields.io/github/last-commit/Aruelius/cloud189.svg">
 </p>
 
+# 服务器部署步骤
+* Git clone
+* apt install python3-pip
+* pip3 install -r requirements.txt
+* nohup python3 main.py {用户名} {密码} &
+
 # 准备
 1. Python 版本 >= 3.8
 
